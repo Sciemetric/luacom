@@ -251,7 +251,8 @@ endmacro ()
 # [1] http://lua-users.org/wiki/BinToCee
 # [2] http://lua-users.org/wiki/LuaCompilerInLua
 function ( add_lua_bin2c _target _source )
-  find_program ( LUA NAMES lua lua.bat )
+  find_package ( Lua REQUIRED )
+  set ( LUA ${LUA_EXECUTABLE} CACHE STRING "" )
   execute_process ( COMMAND ${LUA} -e "string.dump(function()end)"
                     RESULT_VARIABLE _LUA_DUMP_RESULT ERROR_QUIET )
   if ( NOT ${_LUA_DUMP_RESULT} )
