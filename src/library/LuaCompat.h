@@ -1,9 +1,11 @@
 /*
  * LuaCompat.h
  *
- *  Library that tries to hide almost all diferences
+ *  Library that tries to hide almost all differences
  *  between Lua versions
  *
+ *  This file isn't as useful as it used to be since
+ *  we no longer support Lua < 5.1.
  */
 
 #ifndef __LUACOMPAT_H

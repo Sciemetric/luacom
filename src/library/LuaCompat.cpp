@@ -2,7 +2,7 @@
  * LuaCompat.c
  *
  *  Implementation of the class LuaCompat,
- *  which tries to hide almost all diferences
+ *  which tries to hide almost all differences
  *  between Lua versions
  *
  *  This file isn't as useful as it used to be since
