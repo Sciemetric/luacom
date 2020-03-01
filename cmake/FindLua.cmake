@@ -107,10 +107,14 @@ IF(LUA_LIBRARY)
 ENDIF(LUA_LIBRARY)
 
 # Determine Lua version
-IF(LUA_INCLUDE_DIR AND EXISTS "${LUA_INCLUDE_DIR}/lua.h")
-  FILE(STRINGS "${LUA_INCLUDE_DIR}/lua.h" lua_version_str REGEX "^#define[ \t]+LUA_RELEASE[ \t]+\"Lua .+\"")
-
-  STRING(REGEX REPLACE "^#define[ \t]+LUA_RELEASE[ \t]+\"Lua ([^\"]+)\".*" "\\1" LUA_VERSION_STRING "${lua_version_str}")
+IF(LUA_EXECUTABLE)
+  EXECUTE_PROCESS(COMMAND ${LUA_EXECUTABLE} -v
+                  OUTPUT_VARIABLE lua_version_str
+                  ERROR_VARIABLE lua_version_str)
+  STRING(REGEX REPLACE  "^(Lua|LuaJIT)[ \\t]+([0-9]\\.[0-9]\\.[0-9]).*"
+                        "\\1 \\2"
+                        LUA_VERSION_STRING
+                        "${lua_version_str}")
   UNSET(lua_version_str)
 ENDIF()
 
