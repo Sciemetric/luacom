@@ -2,7 +2,7 @@
  * LuaCompat.c
  *
  *  Implementation of the class LuaCompat,
- *  which tries to hide almost all diferences
+ *  which tries to hide almost all differences
  *  between Lua versions
  *
  *  This file isn't as useful as it used to be since
@@ -105,11 +105,7 @@ int luaCompat_isOfType(lua_State* L, const char* module, const char* type)
   luaCompat_getType(L, -1);
   luaCompat_pushTypeByName(L, module, type);
 
-#if defined(NLUA51)
   result = (lua_compare(L, -1, -2,LUA_OPEQ) ? 1 : 0);
-#else
-  result = (lua_equal(L, -1, -2) ? 1 : 0);
-#endif
   lua_pop(L, 2);
 
   LUASTACK_CLEAN(L, 0);
@@ -209,3 +205,15 @@ int luaCompat_checkTagToCom(lua_State *L, int luaval)
   return 1;
 }
 
+#if LUA_VERSION_NUM < 502
+int lua_compare(lua_State *L, int a, int b, LUA_OPS op)
+{
+  switch(op)
+  {
+    case LUA_OPEQ: return lua_equal(L, a, b);
+    case LUA_OPLT: return lua_lessthan(L, a, b);
+    case LUA_OPLE: return !lua_lessthan(L, b, a);
+    default: return 0;
+  }
+}
+#endif

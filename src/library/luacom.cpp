@@ -2220,7 +2220,9 @@ LUACOM_API void luacom_open(lua_State *L)
   LUASTACK_SET(L);
 
   // creates LuaCOM library table
-  luaL_register(L, LIBNAME, functions_tb);
+  luaL_newlib(L, functions_tb);
+  lua_pushvalue(L, -1);
+  lua_setglobal(L, LIBNAME);
 
   // prepares to store configuration table in
   // library table

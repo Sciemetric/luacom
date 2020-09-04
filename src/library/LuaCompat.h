@@ -1,9 +1,11 @@
 /*
  * LuaCompat.h
  *
- *  Library that tries to hide almost all diferences
+ *  Library that tries to hide almost all differences
  *  between Lua versions
  *
+ *  This file isn't as useful as it used to be since
+ *  we no longer support Lua < 5.1.
  */
 
 #ifndef __LUACOMPAT_H
@@ -28,6 +30,14 @@ void luaCompat_moduleSet(lua_State* L, const char* module, const char* key);
 void luaCompat_moduleGet(lua_State* L, const char* module, const char* key);
 
 int luaCompat_checkTagToCom(lua_State *L, int luaval);
+
+#if LUA_VERSION_NUM < 502
+#define luaL_newlib(L, l) lua_createtable(L, 0, sizeof((l)) / sizeof((l[0])) ); luaL_register(L, NULL, l)
+#define lua_rawlen(L, index) lua_objlen(L, index)
+
+enum LUA_OPS { LUA_OPEQ = 0, LUA_OPLT, LUA_OPLE, };
+int lua_compare(lua_State *L, int a, int b, LUA_OPS op);
+#endif
 
 #ifdef __cplusplus
 extern "C"

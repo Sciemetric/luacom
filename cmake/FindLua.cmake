@@ -40,7 +40,8 @@ SET(_POSSIBLE_LUA_LIBRARY lua)
 IF(Lua_FIND_VERSION_MAJOR AND Lua_FIND_VERSION_MINOR)
   SET(_POSSIBLE_SUFFIXES "${Lua_FIND_VERSION_MAJOR}${Lua_FIND_VERSION_MINOR}" "${Lua_FIND_VERSION_MAJOR}.${Lua_FIND_VERSION_MINOR}" "-${Lua_FIND_VERSION_MAJOR}.${Lua_FIND_VERSION_MINOR}")
 ELSE(Lua_FIND_VERSION_MAJOR AND Lua_FIND_VERSION_MINOR)
-  SET(_POSSIBLE_SUFFIXES "52" "5.2" "-5.2" "51" "5.1" "-5.1")
+  SET(_POSSIBLE_SUFFIXES "53" "5.3" "-5.3" "52" "5.2" "-5.2" "51" "5.1" "-5.1")
+  SET(_POSSIBLE_JIT_SUFFIXES "-2.1" "-2.0")
 ENDIF(Lua_FIND_VERSION_MAJOR AND Lua_FIND_VERSION_MINOR)
 
 # Set up possible search names and locations
@@ -48,6 +49,12 @@ FOREACH(_SUFFIX ${_POSSIBLE_SUFFIXES})
   LIST(APPEND _POSSIBLE_LUA_INCLUDE "include/lua${_SUFFIX}")
   LIST(APPEND _POSSIBLE_LUA_EXECUTABLE "lua${_SUFFIX}")
   LIST(APPEND _POSSIBLE_LUA_LIBRARY "lua${_SUFFIX}")
+ENDFOREACH(_SUFFIX)
+
+# Repeat for Luajit
+LIST(APPEND _POSSIBLE_LUA_EXECUTABLE luajit)
+FOREACH(_SUFFIX ${_POSSIBLE_JIT_SUFFIXES})
+  LIST(APPEND _POSSIBLE_LUA_INCLUDE "include/luajit${_SUFFIX}")
 ENDFOREACH(_SUFFIX)
 
 # Find the lua executable
@@ -100,10 +107,14 @@ IF(LUA_LIBRARY)
 ENDIF(LUA_LIBRARY)
 
 # Determine Lua version
-IF(LUA_INCLUDE_DIR AND EXISTS "${LUA_INCLUDE_DIR}/lua.h")
-  FILE(STRINGS "${LUA_INCLUDE_DIR}/lua.h" lua_version_str REGEX "^#define[ \t]+LUA_RELEASE[ \t]+\"Lua .+\"")
-
-  STRING(REGEX REPLACE "^#define[ \t]+LUA_RELEASE[ \t]+\"Lua ([^\"]+)\".*" "\\1" LUA_VERSION_STRING "${lua_version_str}")
+IF(LUA_EXECUTABLE)
+  EXECUTE_PROCESS(COMMAND ${LUA_EXECUTABLE} -v
+                  OUTPUT_VARIABLE lua_version_str
+                  ERROR_VARIABLE lua_version_str)
+  STRING(REGEX REPLACE  "^(Lua|LuaJIT)[ \\t]+([0-9]\\.[0-9]\\.[0-9]).*"
+                        "\\1 \\2"
+                        LUA_VERSION_STRING
+                        "${lua_version_str}")
   UNSET(lua_version_str)
 ENDIF()
 
